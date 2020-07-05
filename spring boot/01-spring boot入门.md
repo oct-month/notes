@@ -137,3 +137,86 @@ f) 简化部署
 ```
 
 将这个project打成jar包，直接使用 java -jar 的命令进行执行。
+
+
+
+## 4、主程序类，主入口类
+
+```java
+/**
+ * 标注一个主程序类
+ */
+@SpringBootApplication
+public class HelloApplication
+{
+    public static void main(String[] args)
+    {
+        SpringApplication.run(HelloApplication.class, args);
+    }
+}
+```
+
+
+
+## 5、自动配置
+
+@**SpringBootApplication**: Spring Boot应用。标注在某个类上说明这个类是Spring Boot的主配置类，Spring Boot就应该运行这个类的main方法来启动Spring Boot应用。
+
+```java
+// SpringBootApplication上面的注解
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(
+    excludeFilters = {@Filter(
+    type = FilterType.CUSTOM,
+    classes = {TypeExcludeFilter.class}
+), @Filter(
+    type = FilterType.CUSTOM,
+    classes = {AutoConfigurationExcludeFilter.class}
+)}
+)
+```
+
+@**SpringBootConfiguration**: Spring Boot的配置类。标注在某个类上表示这是一个Spring Boot的配置类。在SpringBootConfiguration上又有@Configuration注解，代替原来的xml配置文件。
+
+@**EnableAutoConfiguration**：开启自动配置功能。以前我们需要自己配置的东西，Spring Boot帮我们自动配置。
+
+```java
+// EnableAutoConfiguration上面的注解
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@AutoConfigurationPackage
+@Import({AutoConfigurationImportSelector.class})
+```
+
+@**AutoConfigurationPackage**：自动配置包。<u>*将主配置类@SpringBootApplication标注的类所在包及下面所有子包里面的所有组件扫描到Spring容器*</u>；
+
+```java
+// AUtoConfigurationPackage上面的注解
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@Import({Registrar.class})
+```
+
+@**Import**：Spring的底层注解@Import，给容器中导入一个组件；导入的组件由Registrar这个类来指定该导入哪些组件。
+
+@**Import({AutoConfigurationImportSelector.class})**，导入哪些组件的选择器。
+
+将所有需要导入的组件以全类名的方式放回，这些组件就会被添加到容器中。会给容器中导入非常多的自动配置类（**AutoConfiguration），就是给容器导入这个场景需要的所有组件，并配置好这些组件。
+
+有了自动配置类，免去了我们手动编写配置注入功能组件等的工作。
+
+SpringBoot在启动的时候从类路径下的META-INF/spring.factories中获取EnableAutoConfiguration指定的值，将这些值作为自动配置类导入到容器中，自动配置类就生效，帮我们进行自动配置工作。
+
+J2EE的整体解决方案和自动配置都在spring-boot-auto-configuration.jar中。
+
+
+
