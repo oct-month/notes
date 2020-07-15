@@ -55,4 +55,35 @@ public class DemoApplication
 
 ​	1）Spring Boot在自动配置组件的时候，先看容器中有没有用户自己配置的（@Bean、@Component）；如果有就用用户配置的，如果没有就自动配置。如果有些组件可以有多个，将用户配置的和自己默认的组合起来。
 
-​	2）
+​	2）自己编写一个配置类@Configuration，WebMvcConfigurerAdapter类型，不标注@EnableWebMvc。
+
+```java
+@Configuration
+public class MyMvcConfi extends WebMvcConfigurerAdapter
+{
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry)
+    {
+        registry.addViewController("/hello").setViewName("success");
+    }
+}
+```
+
+​	这样配置后，浏览器发送 /hello 请求也会映射到 success 页面；但是Spring Boot自动配置的映射规则还在。
+
+​	3）全面接管Spring MVC，@EnableWebMvc。
+
+```java
+@EnableWebMvc
+@Configuration
+public class MyMvcConfi extends WebMvcConfigurerAdapter
+{
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry)
+    {
+        registry.addViewController("/hello").setViewName("success");
+    }
+}
+```
+
+​	这样配置后，Spring Boot对Spring Mvc的自动配置就都失效了，所有的配置都需要自己来。
