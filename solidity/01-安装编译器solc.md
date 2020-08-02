@@ -99,7 +99,7 @@ contract Faucet is Owned        // 继承 Owned
 
 ```sh
 cnpm install solc@^0.4.22 -S
-ls -s node_modules/.bin/solcjs ./solc
+ln -s node_modules/.bin/solcjs ./solc
 ./solc --bin Faucet.sol
 ./solc --abi Faucet.sol
 ```
@@ -185,5 +185,69 @@ Faucet_sol_Faucet.abi：
         "type": "event"
     }
 ]
+```
+
+## 4、truffle 创建工程
+
+1）安装 truffle
+
+```sh
+sudo cnpm install truffle -g
+```
+
+2）更改hosts文件
+
+使用 [google hosts](https://github.com/googlehosts/hosts/blob/master/hosts-files/hosts) 文件替换本地的 /etc/hosts 文件。
+
+```sh
+sudo gedit /etc/hosts
+```
+
+3）创建工程
+
+```sh
+mkdir test
+cd test
+truffle init
+```
+
+4）工程目录结构
+
+- test/
+    - contracts/		存放合约sol文件
+        - Migrations.sol
+    - migrations/		存放部署脚本
+        - 1_initial_migration.js
+    - test/				存放测试脚本
+        - .gitkeep
+    - truffle-config.js		项目配置文件
+
+5）改配置文件
+
+truffle-config.js：
+
+```js
+module.exports = {
+  compilers: {
+    solc: {
+      version: "0.4.22",	// 设置 solc 编译器版本
+    },
+  },
+};
+```
+
+6）编写合约，测试
+
+a、进入 truffle 测试环境控制台
+
+```sh
+truffle develop
+```
+
+b、编译、部署合约
+
+```sh
+compile
+migrate
 ```
 
