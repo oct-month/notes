@@ -5,7 +5,7 @@
 安装命令：
 
 ```sh
-cnpm install -g solc
+sudo cnpm install -g solc
 ```
 
 编译命令：
@@ -46,10 +46,9 @@ solc --abi test.sol
 
 ## 3、第一个 solidity 合约
 
-Faucet.sol：
+Owned.sol：
 
 ```sol
-// Our first contract is a faucet
 pragma solidity ^0.4.22;
 
 
@@ -73,6 +72,15 @@ contract Owned
         selfdestruct(owner);    // 合约自我销毁，并把余额转移到 owner 中
     }
 }
+```
+
+Faucet.sol：
+
+```sol
+pragma solidity ^0.4.22;
+
+
+import "Owned.sol";
 
 
 contract Faucet is Owned        // 继承 Owned
@@ -192,6 +200,7 @@ Faucet_sol_Faucet.abi：
 1）安装 truffle
 
 ```sh
+sudo cnpm install ganache-cli -g
 sudo cnpm install truffle -g
 ```
 
@@ -228,11 +237,18 @@ truffle-config.js：
 
 ```js
 module.exports = {
-  compilers: {
-    solc: {
-      version: "0.4.22",	// 设置 solc 编译器版本
+    networks: {
+        development: {
+        host: "127.0.0.1",
+        port: 8545,
+        network_id: "*",
+        },
     },
-  },
+    compilers: {
+        solc: {
+            version: "0.4.26",	// 设置 solc 编译器版本
+        },
+    },
 };
 ```
 
@@ -240,8 +256,16 @@ module.exports = {
 
 a、进入 truffle 测试环境控制台
 
+启动 ganache 测试环境区块链（默认工作在 127.0.0.1:8545 ）：
+
 ```sh
-truffle develop
+ganache-cli
+```
+
+打开 truffle 控制台，连接到 ganache 测试链。
+
+```sh
+truffle console
 ```
 
 b、编译、部署合约
