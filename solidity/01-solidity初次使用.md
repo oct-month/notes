@@ -1,6 +1,6 @@
-# 安装 solc 编译器
+# solidity 初次使用
 
-## 1、npm / Node.js
+## 1、npm / Node.js 安装 solcjs
 
 安装命令：
 
@@ -14,7 +14,7 @@ sudo cnpm install -g solc
 solcjs --bin test.sol
 ```
 
-## 2、ppa
+## 2、ppa 安装 solc
 
 安装命令：
 
