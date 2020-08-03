@@ -49,6 +49,8 @@
 
 ![image-20200803111932507](.img/image-20200803111932507.png)
 
+
+
 ## 3、段落标签 \<p\>
 
 在网页中，要把文字有条理地显示出来，就需要将这些文字分段显示。在 HTML 标签中，\<p\> 标签用于定义段落，它可以将整个网页分为若干个段落。
@@ -94,6 +96,8 @@
 ```
 
 ![image-20200803113919318](.img/image-20200803113919318.png)
+
+
 
 ## 4、换行标签 \<br/\>
 
@@ -141,6 +145,8 @@
 
 ![image-20200803114828658](.img/image-20200803114828658.png)
 
+
+
 ## 5、案例 -- 体育新闻
 
 代码：
@@ -183,6 +189,8 @@
 
 ![image-20200803120120251](.img/image-20200803120120251.png)
 
+
+
 ## 6、文本格式化标签
 
 在网页中，有时需要为文字设置**粗体**、*斜体*、<u>下划线</u> 等效果，这时就需要用到 HTML 中的文本格式化标签，使文字以特殊的方式显示。
@@ -195,4 +203,178 @@
 | 倾斜   | \<em\>\</em\> 或者 \<i\>\</i\>         |
 | 删除线 | \<del\>\</del\> 或者 \<s\>\</s\>       |
 | 下划线 | \<ins\>\</ins\> 或者 \<u\>\</u\>       |
+
+### 1）加粗 \<strong\> \<b\>
+
+**示例：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>文本格式化标签</title>
+    </head>
+    <body>
+        我是<strong>加粗</strong>的文字<br/>
+        我是<b>加粗</b>的文字
+    </body>
+</html>
+```
+
+![image-20200803161256100](.img/image-20200803161256100.png)
+
+### 2）倾斜 \<em\> \<i\>
+
+**示例：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>文本格式化标签</title>
+    </head>
+    <body>
+        我是<em>倾斜</em>的文字<br/>
+        我是<i>倾斜</i>的文字
+    </body>
+</html>
+```
+
+![image-20200803161506313](.img/image-20200803161506313.png)
+
+### 3）删除线 \<del\> \<s\>
+
+**示例：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>文本格式化标签</title>
+    </head>
+    <body>
+        我是<del>删除线</del><br/>
+        我是<s>删除线</s>
+    </body>
+</html>
+```
+
+![image-20200803161751136](.img/image-20200803161751136.png)
+
+### 4）下划线 \<ins\> \<u\>
+
+**示例：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>文本格式化标签</title>
+    </head>
+    <body>
+        我是<ins>下划线</ins><br/>
+        我是<u>下划线</u>
+    </body>
+</html>
+```
+
+![image-20200803161921717](.img/image-20200803161921717.png)
+
+
+
+## 7、盒子标签 \<div\> \<span\>
+
+\<div\> 和 \<span\> 是没有语义的，它们就是一个盒子，用来装内容的。
+
+```html
+<div>盒子</div>
+<span>盒子</span>
+```
+
+div 是 division 的缩写，表示分割、分区，span 意为跨度、跨距。
+
+**特点：**
+
+- \<div\> 标签用来布局，但是现在一行只能放一个 \<div\> 。可以理解为大盒子
+- \<span\> 标签用来布局，一行可以放多个 \<span\> 。可以理解为小盒子
+
+**示例：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>盒子标签</title>
+    </head>
+    <body>
+        <div>我是一个div标签，我单独占一行</div>123
+        <div>我是一个div标签，我单独占一行</div>123
+        <span>百度</span>
+        <span>新浪</span>
+        <span>搜狐</span>
+    </body>
+</html>
+```
+
+![image-20200803163936410](.img/image-20200803163936410.png)
+
+
+
+## 8、图像标签 \<img\>
+
+在 HTML 标签中，\<img\> 标签用于定义 HTML 页面中的图像。
+
+```html
+<img src="图像路径"/>
+```
+
+单词 image 的缩写，意为图像。
+
+src 是 \<img\> 标签的必须属性，它用于指定图像文件的路径。
+
+属性：属于标签的特性。
+
+**标签的其它属性：**
+
+| 属性   | 属性值     | 说明                           |
+| ------ | ---------- | ------------------------------ |
+| src    | 图片的路径 | 必须属性                       |
+| alt    | 文本       | 当图像不能显示时，显示的文字   |
+| title  | 文本       | 当鼠标放到图像上时，提示的文字 |
+| width  | 像素       | 设置图像的宽度                 |
+| height | 像素       | 设置图像的高度                 |
+| border | 像素       | 设置图像的边框粗细             |
+
+**注意点：**
+
+- 图像标签可以有多个属性，必须写在标签名后面
+- 属性之间不分先后顺序，属性与属性之间用空格分开
+- 属性采取键值对的格式，即 key="value" 的格式
+
+**示例：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>图像标签</title>
+    </head>
+    <body>
+        <h4>图像标签的使用：</h6>
+        <img src="terminal.png" title="终端" width="50" height="50"/>
+        <h4>alt 替换文本属性的使用：</h4>
+        <img src="test.png" alt="找不到图片" width="50" height="50"/>
+        <h4>边框设定：</h4>
+        <img src="terminal.png" title="终端" width="50" height="50" border="20"/>
+    </body>
+</html>
+```
+
+![image-20200803170402905](.img/image-20200803170402905.png)
 
