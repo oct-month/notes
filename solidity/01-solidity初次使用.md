@@ -116,7 +116,7 @@ ln -s node_modules/.bin/solcjs ./solc
 
 ```json
 {
-    "solidity.compileUsingLocalVersion": "./solc"
+    "solidity.compileUsingLocalVersion": "./node_modules/.bin/solcjs"
 }
 ```
 
