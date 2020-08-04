@@ -416,6 +416,7 @@ src 是 \<img\> 标签的必须属性，它用于指定图像文件的路径。
 | 空链接       | 当没有确定链接目标时                                     |
 | 下载链接     | href 里面的地址是一个文件或者压缩包                      |
 | 网页元素链接 | 在网页中的各种网页元素，如文本、图像、表格、音频、视频等 |
+| 锚点链接     | 可以快速定位到页面中的某个位置                           |
 
 **示例：**
 
@@ -438,10 +439,37 @@ src 是 \<img\> 标签的必须属性，它用于指定图像文件的路径。
         <h4>4、下载链接</h4>
         <a href="terminal.7z">terminal.7z</a>
         <h4>5、网页元素的链接</h4>
-        
+        <a href="https://www.baidu.com"><img src="terminal.png" alt="图片"></a>
     </body>
 </html>
 ```
 
+![image-20200804202755721](.img/image-20200804202755721.png)
 
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>超链接标签</title>
+    </head>
+    <body>
+        <h4>6、锚点链接</h4>
+        <a href="#chrome">常用浏览器</a><br/>
+        ....
+        ....
+        ....
+        ....
+        ....
+        ....
+        ....
+        <h4 id="chrome">## 2、常用浏览器</h4><br/>
+        ....
+        ....
+        ....
+        ....
+        ....
+    </body>
+</html>
+```
 
