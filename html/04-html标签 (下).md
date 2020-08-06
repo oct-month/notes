@@ -43,7 +43,17 @@
 
 表头单元格也是单元格，常用于表格第一行，突出重要性，表头单元格里面的文字会加粗居中显示。
 
-### 4）表格属性
+### 4）表格结构标签 \<thead\> \<tbody\>
+
+因为表格可能很长，为了更好地表示表格的语义，可以将表格分割成表格头部和表格主体两大部分。
+
+在表格标签中，分别用：\<thead\> 标签表示表格的头部区域、\<tbody\> 标签表示表格的主体区域。这样可以更好地分清表格结构。
+
+- \<thead\> 定义表格的头部。\<thead\> 内部必须要有 \<tr\> 标签，一般是位于第一行。
+- \<tbody\> 用于定义表格的主体，主要用于放数据本体。
+- 以上标签都是放在 \<table\> 中的。
+
+### 5）表格属性
 
 | 属性名      | 属性值              | 描述                                             |
 | ----------- | ------------------- | ------------------------------------------------ |
@@ -52,4 +62,157 @@
 | cellpadding | 像素值              | 规定单元边沿与其内容之间的空白，默认 2           |
 | cellspacing | 像素值              | 规定单元格之间的空白，默认 2                     |
 | width       | 像素值、百分比      | 规定表格的宽度                                   |
+
+### 6）案例 -- 小说排行榜
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <table align="center" border="1" cellpadding="2" cellspacing="0" width="500" height="250">
+        <thead>
+            <tr>
+                <th>排名</th>
+                <th>关键词</th>
+                <th>趋势</th>
+                <th>进入搜索</th>
+                <th>最近七日</th>
+                <th>相关链接</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>鬼吹灯</td>
+                <td><img src="images/down.jpg" alt="下"></td>
+                <td>456</td>
+                <td>123</td>
+                <td><a href="#">贴吧</a> <a href="#">图片</a> <a href="#">百科</a></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>盗墓笔记</td>
+                <td><img src="images/down.jpg" alt="下"></td>
+                <td>123</td>
+                <td>657344</td>
+                <td><a href="#">贴吧</a> <a href="#">图片</a> <a href="#">百科</a></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>西游记</td>
+                <td><img src="images/up.jpg" alt="上"></td>
+                <td>212</td>
+                <td>454355</td>
+                <td><a href="#">贴吧</a> <a href="#">图片</a> <a href="#">百科</a></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>东游记</td>
+                <td><img src="images/up.jpg" alt="上"></td>
+                <td>23</td>
+                <td>54344</td>
+                <td><a href="#">贴吧</a> <a href="#">图片</a> <a href="#">百科</a></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>甄嬛传</td>
+                <td><img src="images/down.jpg" alt="下"></td>
+                <td>456</td>
+                <td>123</td>
+                <td><a href="#">贴吧</a> <a href="#">图片</a> <a href="#">百科</a></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>水浒传</td>
+                <td><img src="images/up.jpg" alt="上"></td>
+                <td>53534</td>
+                <td>3454323</td>
+                <td><a href="#">贴吧</a> <a href="#">图片</a> <a href="#">百科</a></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>三国演义</td>
+                <td><img src="images/up.jpg" alt="上"></td>
+                <td>234</td>
+                <td>35345</td>
+                <td><a href="#">贴吧</a> <a href="#">图片</a> <a href="#">百科</a></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+```
+
+![image-20200806211831098](.img/image-20200806211831098.png)
+
+### 7）合并单元格
+
+**合并单元格的方式：**
+
+- 跨行合并：rowspan="合并单元格的个数"
+    - 最上侧单元格为目标单元格，写合并代码
+- 跨列合并：colspan="合并单元格的个数"
+    - 最左侧单元格为目标单元格，写合并代码
+
+**合并单元格三部曲：**
+
+- 先确定是跨行还是跨列合并
+- 找到目标单元格，写合并属性
+- 删除多余的单元格
+
+**例子：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <table align="center" border="1" cellpadding="2" cellspacing="0" width="500" height="250">
+        <thead>
+            <tr>
+                <th>排名</th>
+                <th>关键词</th>
+                <th>趋势</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th></th>
+                <th colspan="2">跨列合并</th>
+                <!-- <th></th> -->
+            </tr>
+            <tr>
+                <th rowspan="2">跨行合并</th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <!-- <th></th> -->
+                <th></th>
+                <th></th>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+```
+
+![image-20200806214324680](.img/image-20200806214324680.png)
+
+
+
+## 2、列表标签
+
+表格是用来显示数据的，而列表是用来布局的。
+
+列表最大的特点就是整齐、整洁、有序，它作为布局会更加自由和方便。
+
+根据使用场景不同，列表可以分为 3 大类：无序列表、有序列表和自定义列表。
 
