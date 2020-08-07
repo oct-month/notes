@@ -1,6 +1,8 @@
 ## ubuntu 安装
 
 ```sh
+sudo snap install node
+# 或者
 sudo apt-get install nodejs npm
 ```
 
@@ -8,7 +10,7 @@ sudo apt-get install nodejs npm
 
 ## Windows 安装
 
-https://nodejs.org/en/ 官网下载最新的 LTS 版本。然后安装到 D:\nodejs 目录下
+https://nodejs.org/en/download 官网下载最新的 LTS 版本。然后安装到 D:\nodejs 目录下
 
 
 
@@ -41,10 +43,18 @@ npm install -g cnpm --registry=https://registry.npm.taobao.org
 
 ## 注意
 
-cnpm install 安装依赖默认不写入 package.json 文件，需要加 -S 选项：
+1、cnpm install 安装依赖默认不写入 package.json 文件，需要加 -S 选项：
 
 ```sh
 cnpm install 依赖包@版本 -S
+```
+
+2、在 ubuntu 下，cnpm会默认把包安装到 /usr/local/lib/node_modules/ 目录下，而 npm 会把包安装到 /usr/lib/node_modules/ 目录下；cnpm 的缓存目录是 ~/.npm/.npm/，而 npm 的缓存目录是 ~/.npm。所以两者是互不影响的。
+
+3、sudo npm 安装包失败时（提示没有权限），可以加上 --unsafe-perm 参数；例如：
+
+```sh
+sudo npm install electron -g -f --unsafe-perm
 ```
 
 

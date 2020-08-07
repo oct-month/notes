@@ -106,7 +106,7 @@ contract Faucet is Owned        // 继承 Owned
 编译：
 
 ```sh
-cnpm install solc@^0.4.22 -S
+cnpm install solc@^0.4.26 -S
 ln -s node_modules/.bin/solcjs ./solc
 ./solc --bin Faucet.sol
 ./solc --abi Faucet.sol
