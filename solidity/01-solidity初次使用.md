@@ -5,7 +5,7 @@
 安装命令：
 
 ```sh
-sudo cnpm install -g solc
+sudo npm install -g solc
 ```
 
 编译命令：
@@ -106,7 +106,7 @@ contract Faucet is Owned        // 继承 Owned
 编译：
 
 ```sh
-cnpm install solc@^0.4.26 -S
+npm install solc@^0.4.26 -S
 ln -s node_modules/.bin/solcjs ./solc
 ./solc --bin Faucet.sol
 ./solc --abi Faucet.sol
