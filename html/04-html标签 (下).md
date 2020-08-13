@@ -391,3 +391,44 @@
 | submit   | 定义提交按钮，提交按钮会把表单数据发送到服务器               |
 | text     | 定义单行输入字段，用户可在其中输入文本，默认宽度为 20 个字符 |
 
+**input 的其它属性：**
+
+| 属性      | 属性值     | 描述                                  |
+| --------- | ---------- | ------------------------------------- |
+| name      | 用户自定义 | 定义 input 元素的名称                 |
+| value     | 用户自定义 | 定义 input 元素的值                   |
+| checked   | checked    | 规定此 input 元素首次加载时应当被选中 |
+| maxlength | 正整数     | 输入字段中的字符的最大长度            |
+
+- name 和 value 是每个表单元素都有的属性值，主要给后台人员使用
+- name 表单元素的名字，要求**单选按钮和复选框有相同的 value 值**
+- checked 属性主要针对于单选按钮和复选框。主要作用是：一打开页面就可以默认选中某个表单元素
+- maxlength 是用户可以在表单元素输入的最大字符个数，一般很少用
+
+##### 文本框和密码框、单选按钮和复选框
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <!-- text 文本框 用户可以在里面输入文字 -->
+        用户名：<input type="text" name="username" value="请输入用户名" maxlength="6"/><br/>
+        <!-- password 密码框 用户看不见输入的密码 -->
+        密码：<input type="password" name="password"/><br/>
+        <!-- radio 单选按钮 可以实现多选一 -->
+        <!-- name 是表单元素的名字 这里如果把 name 设定为相同的值 那么就实现了多选一 -->
+        <!-- 单选按钮可以设置 checked 属性 当web页面打开时就会默认选中这个按钮 -->
+        性别：男<input type="radio" name="sex" value="man" checked/> 女<input type="radio" name="sex" value="woman"/><br/>
+        <!-- checkbox 复选框 可以实现多选 -->
+        <!-- 复选框可以设置 checked 属性 当web页面打开时就会默认选中这个框 -->
+        爱好：吃饭<input type="checkbox" name="hobby" value="eat" checked/> 睡觉<input type="checkbox" name="hobby" value="sleep"/> 冲冲冲<input type="checkbox" name="hobby" value="chongchongchong" checked/><br/>
+    </form>
+</body>
+</html>
+```
+
