@@ -359,7 +359,7 @@
 
 在表单域中可以定义各种表单元素，这些表单元素就是允许用户在表单中输入或者选择的内容控件。
 
-#### a、表单元素 \<input/\>
+#### a、输入表单元素 \<input/\>
 
 在英文单词中，input 是输入的意思，而在表单元素中 \<input\> 标签用于收集用户信息。
 
@@ -405,7 +405,7 @@
 - checked 属性主要针对于单选按钮和复选框。主要作用是：一打开页面就可以默认选中某个表单元素
 - maxlength 是用户可以在表单元素输入的最大字符个数，一般很少用
 
-##### 文本框和密码框、单选按钮和复选框
+**例：文本框、密码框、单选按钮、复选框、提交按钮、重置按钮、普通按钮、文件域**
 
 ```html
 <!DOCTYPE html>
@@ -415,7 +415,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form>
+    <form action="#" method="GET">
         <!-- text 文本框 用户可以在里面输入文字 -->
         用户名：<input type="text" name="username" value="请输入用户名" maxlength="6"/><br/>
         <!-- password 密码框 用户看不见输入的密码 -->
@@ -427,8 +427,56 @@
         <!-- checkbox 复选框 可以实现多选 -->
         <!-- 复选框可以设置 checked 属性 当web页面打开时就会默认选中这个框 -->
         爱好：吃饭<input type="checkbox" name="hobby" value="eat" checked/> 睡觉<input type="checkbox" name="hobby" value="sleep"/> 冲冲冲<input type="checkbox" name="hobby" value="chongchongchong" checked/><br/>
+        <!-- 提交按钮 点击后可以把表单域里面的表单元素的值提交给后台服务器 -->
+        <input type="submit" value="免费注册"/>
+        <!-- 重置按钮 还原表单元素初始的默认状态 -->
+        <input type="reset" value="重新填写"/><br/>
+        <!-- 普通按钮 button 后期结合 js 搭配使用 -->
+        <input type="button" value="获取短信验证码"/><br/>
+        <!-- 文件域 上传文件使用的 -->
+        上传头像：<input type="file"/>
     </form>
 </body>
 </html>
 ```
+
+![image-20200815171806725](.img/image-20200815171806725.png)
+
+#### b、标注表单元素 \<label\>
+
+\<label\> 标签为 input 元素定义标注（标签）。
+
+\<label\> 标签用于绑定一个表单元素，当点击 \<label\> 标签内的文本时，浏览器就会自动将焦点（光标）转到或者选择对应的表单元素上，用来增加用户体验。
+
+**语法：**
+
+```html
+<label for="sex">男</label>
+<input type="radio" name="sex" id="sex"/>
+```
+
+核心：\<label\> 标签的 for 属性应当与相关元素的 id 属性相同。
+
+**例子：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <!-- label 的 for 和 input 的 id 一样 -->
+    <label for="username">用户名</label> <input type="text" id="username"/> <br/>
+    <!-- 点击 label，radio 就会被选中 -->
+    <input type="radio" name="sex" id="man"/> <label for="man">男</label>
+    <input type="radio" name="sex" id="woman"/> <label for="woman">女</label> <br/>
+</body>
+</html>
+```
+
+![image-20200815184017694](.img/image-20200815184017694.png)
+
+#### c、下拉表单元素 \<select\>
 
