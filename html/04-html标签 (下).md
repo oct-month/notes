@@ -480,3 +480,255 @@
 
 #### c、下拉表单元素 \<select\>
 
+在页面中，如果有多个选项让用户选择，并且想要节约页面空间时，我们可以使用 \<select\> 标签控件定义下拉列表。
+
+**语法：**
+
+```html
+<select>
+    <option>选项1</option>
+    <option>选项2</option>
+    <option>选项3</option>
+    ... ...
+</select>
+```
+
+- \<select\> 中至少包含一对 \<option\> 。
+- 在 \<option\> 中定义 selected 属性时，表示当前项为默认选中项。
+
+**例子：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <form action="#" method="get">
+        籍贯：
+        <select name="native">
+            <option value="shandong">山东</option>
+            <option value="beijing">北京</option>
+            <option value="tianjin">天津</option>
+            <option value="jian">吉安</option>
+            <option value="huoxing">火星</option>
+            <option value="yiishijie">异世界</option>
+            <option value="erciyuan" selected>二次元</option>
+        </select>
+    </form>
+</body>
+</html>
+```
+
+![image-20200816085214325](.img/image-20200816085214325.png)
+
+#### d、文本域表单元素 \<textarea\>
+
+当用户输入内容较多的情况下，我们就不能使用文本框表单了，此时可以使用 \<textarea\> 标签。
+
+在表单元素中，\<textarea\> 标签是用于定义多行文本输入的控件。
+
+使用多行文本输入控件，可以输入更多的文字，该控件常用于留言板、评论。
+
+**语法：**
+
+```html
+<textarea cols="30" rows="10">
+	文本内容
+</textarea>
+```
+
+- 通过 \<textarea\> 标签可以轻松地创建多行文本输入框。
+- cols 属性定义每行的字符数，rows 属性定义显示的行数。
+
+**例子：**
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <form action="#" method="get">
+        今日反馈：
+        <textarea name="message" cols="30" rows="10">这个是用啥做的？</textarea>
+    </form>
+</body>
+</html>
+```
+
+![image-20200816090247545](.img/image-20200816090247545.png)
+
+
+
+## 4、综合案例 -- 注册页面
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>世纪佳缘</title>
+</head>
+<body>
+    <h4>青春不常在，抓紧谈恋爱</h4>
+    <form action="#" method="GET">
+        <table width="500">
+            <!-- 性别 -->
+            <tr>
+                <td>性别：</td>
+                <td>
+                    <input type="radio" name="sex" value="man" id="man" checked/> <label for="man"><img src="img/man.jpg" alt="男"> 男</label>
+                    <input type="radio" name="sex" value="woman" id="woman"/> <label for="woman"><img src="img/women.jpg" alt="女"> 女</label>
+                </td>
+            </tr>
+            <!-- 生日 -->
+            <tr>
+                <td>生日：</td>
+                <td>
+                    <select name="year">
+                        <option value="0" selected>--请选择年份--</option>
+                        <option value="1998">1998</option>
+                        <option value="1999">1999</option>
+                        <option value="2000">2000</option>
+                        <option value="2001">2001</option>
+                        <option value="2002">2002</option>
+                        <option value="2003">2003</option>
+                        <option value="2004">2004</option>
+                    </select>
+                    <select name="month">
+                        <option value="0" selected>--请选择月份--</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <select name="day">
+                        <option value="0" selected>--请选择日--</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="25">25</option>
+                        <option value="26">26</option>
+                        <option value="27">27</option>
+                        <option value="28">28</option>
+                        <option value="29">29</option>
+                        <option value="30">30</option>
+                        <option value="31">31</option>
+                    </select>
+                </td>
+            </tr>
+            <!-- 所在地区 -->
+            <tr>
+                <td>所在地区：</td>
+                <td>
+                    <input type="text" name="location" value="北京"/>
+                </td>
+            </tr>
+            <!-- 婚姻状况 -->
+            <tr>
+                <td>婚姻状况：</td>
+                <td>
+                    <input type="radio" name="marital" value="unmarried" id="unmarried" checked/> <label for="unmarried">未婚</label>
+                    <input type="radio" name="marital" value="married" id="married"/> <label for="married">已婚</label>
+                    <input type="radio" name="marital" value="divorce" id="divorce"/> <label for="divorce">离婚</label>
+                </td>
+            </tr>
+            <tr>
+                <td>学历：</td>
+                <td>
+                    <input type="text" name="education" value="本科"/>
+                </td>
+            </tr>
+            <!-- 喜欢的类型 -->
+            <tr>
+                <td>喜欢的类型：</td>
+                <td>
+                    <input type="checkbox" name="favorite" value="charming" id="charming"/> <label for="charming">妩媚的</label>
+                    <input type="checkbox" name="favorite" value="lovely" id="lovely"/> <label for="lovely">可爱的</label>
+                    <input type="checkbox" name="favorite" value="younger" id="younger"> <label for="younger">小鲜肉</label>
+                    <input type="checkbox" name="favorite" value="older" id="older"> <label for="older">老腊肉</label>
+                    <input type="checkbox" name="favorite" value="all" id="all" checked> <label for="all">都喜欢</label>
+                </td>
+            </tr>
+            <!-- 自我介绍 -->
+            <tr>
+                <td>自我介绍：</td>
+                <td>
+                    <textarea name="introduce">个人简介</textarea>
+                </td>
+            </tr>
+            <!-- 注册 -->
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" value="免费注册"/>
+                </td>
+            </tr>
+            <!-- 同意条款 -->
+            <tr>
+                <td></td>
+                <td>
+                    <input type="checkbox" name="agree" value="agree" id="agree" checked/> <label for="agree">我同意注册条款和会员加入标准</label>
+                </td>
+            </tr>
+            <!-- 登录 -->
+            <tr>
+                <td></td>
+                <td>
+                    <a href="#">我是会员，立即登录</a>
+                </td>
+            </tr>
+            <!-- 承诺 -->
+            <tr>
+                <td></td>
+                <td>
+                    <h5>我承诺</h5>
+                    <ul>
+                        <li>年满18岁，单身</li>
+                        <li>抱着严肃的态度</li>
+                        <li>真诚地寻找另一半</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+```
+
+![image-20200816102158900](.img/image-20200816102158900.png)
+
