@@ -4,7 +4,7 @@
 
 ## 模型建立
 
-$n$ 个皇后从 $1$ ~ $n$ 编号，第 $i$ 个皇后的位置设定为第 $i$ 行，第 $x_i$ 列，坐标 $(i, x_i)$。
+将 $n$ 个皇后从 $1$ ~ $n$ 编号，第 $i$ 个皇后的位置设定为第 $i$ 行，第 $x_i$ 列，坐标 $(i, x_i)$。
 
 ![n皇后 (1)](.img/n皇后 (1).png)
 
@@ -268,13 +268,101 @@ int main(int argc, char const *argv[])
 
 ### 3、不同参数（density密度值）下概率算法的效率和准确度分析
 
-| n的值                   |   4    |   8    |   15   |    25    |    35    |    50    |  70  | 100  |
-| ----------------------- | :----: | :----: | :----: | :------: | :------: | :------: | :--: | :--: |
-| 回溯法                  |   0s   |   0s   | 0.002s |  0.057s  | 414.353s |   ...    | ...  | ...  |
-| 概率算法（density=0.2） | 0s/0.2 |  0s/0  |  0s/0  | 0.049s/1 | 0.564s/1 | 3.904s/1 | ...  | ...  |
-| 概率算法（density=0.4） | 0s/0.5 | 0s/0.4 |  0s/1  | 0.003s/1 | 0.004s/1 |  0.2s/1  | ...  | ...  |
-| 概率算法（density=0.6） | 0s/0.5 | 0s/0.9 |  0s/1  | 0.001s/1 | 0.002s/1 | 0.014s/1 | ...  | ...  |
-| 概率算法（density=0.8） | 0s/0.8 |  0s/1  |  0s/1  | 0.002s/1 | 0.002s/1 | 0.006s/1 | ...  | ...  |
-| 概率算法（density=1.0） | 0s/0.8 |  0s/1  |  0s/1  |   0s/1   | 0.003s/1 | 0.023s/1 | ...  | ...  |
-| 概率算法（density=1.2） | 0s/0.9 |  0s/1  |  0s/1  | 0.003s/1 | 0.001s/1 | 0.072s/1 | ...  | ...  |
+#### 运行时间
+
+| n的值                   |  5   |   15   |   25   |   30   |    35    |   40    |   45   |   50    |
+| ----------------------- | :--: | :----: | :----: | :----: | :------: | :-----: | :----: | :-----: |
+| 回溯法                  |  0s  |   0s   | 0.019s | 11.4s  | 223.383s |         |        |         |
+| 概率算法（density=0.2） |  0s  |   0s   | 0.136s | 0.39s  |  1.508s  | 22.408s | 7.637s | 62.758s |
+| 概率算法（density=0.4） |  0s  |   0s   | 0.023s | 0.095s |  0.004s  | 0.073s  | 0.053s |  0.02s  |
+| 概率算法（density=0.6） |  0s  |   0s   | 0.001s |   0s   |  0.002s  | 0.008s  | 0.007s | 0.011s  |
+| 概率算法（density=0.8） |  0s  |   0s   | 0.001s | 0.002s |  0.003s  | 0.927s  | 0.044s | 0.004s  |
+| 概率算法（density=1.0） |  0s  | 0.001s | 0.004s | 0.001s |  0.021s  |  0.09s  | 0.016s | 0.013s  |
+| 概率算法（density=1.2） |  0s  |   0s   | 0.005s | 0.004s |  0.02s   | 0.004s  | 0.086s | 0.024s  |
+
+#### 准确度
+
+| n的值                   |  5   |  15  |  25  |  30  |  35  |  40  |  45  |  50  |
+| ----------------------- | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 回溯法                  |  1   |  1   |  1   |  1   |  1   |  1   |  1   |  1   |
+| 概率算法（density=0.2） |  0   |  0   | 0.9  |  1   |  1   |  1   |  1   |  1   |
+| 概率算法（density=0.4） | 0.5  |  1   |  1   |  1   |  1   |  1   |  1   |  1   |
+| 概率算法（density=0.6） | 0.8  |  1   |  1   |  1   |  1   |  1   |  1   |  1   |
+| 概率算法（density=0.8） |  1   |  1   |  1   |  1   |  1   |  1   |  1   |  1   |
+| 概率算法（density=1.0） |  1   |  1   |  1   |  1   |  1   |  1   |  1   |  1   |
+| 概率算法（density=1.2） |  1   |  1   |  1   |  1   |  1   |  1   |  1   |  1   |
+
+#### 分析
+
+```python
+"""
+概率算法和回溯法运行时间比较
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['SimHei']    #用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False      #用来正常显示负号
+
+if __name__ == "__main__":
+    plt.figure(figsize=(8, 4), dpi=80)
+
+    n = np.array([5, 15, 25, 30, 35, 40, 45, 50])
+
+    t = np.array([0, 0, 0.019, 11.4, 223.383])
+    plt.plot(n[:-3], t, label="回溯法", color="red", linewidth=1)
+
+    t = np.array([0, 0, 0.136, 0.39, 1.508, 22.408, 7.637, 62.758])
+    plt.plot(n, t, label="概率算法 - 0.2", color="blue", linewidth=1)
+
+    t = np.array([0, 0, 0.001, 0.002, 0.003, 0.927, 0.044, 0.004])
+    plt.plot(n, t, label="概率算法 - 0.8", color="black", linewidth=1)
+
+    plt.xlabel("$n$")
+    plt.ylabel("$t(s)$")
+    plt.title("算法运行时间比较")
+    plt.legend()
+    plt.show()
+```
+
+![test1](.img/test1.png)
+
+```python
+"""
+概率算法不同density值，结果的准确性比较
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['SimHei']    #用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False      #用来正常显示负号
+
+if __name__ == "__main__":
+    plt.figure(figsize=(8, 4), dpi=80)
+
+    density = np.array([0.2, 0.4, 0.6, 0.8, 1.0, 1.2])
+    n = [5, 15, 25]
+    result = np.array([
+        [0, 0, 0.9],
+        [0.5, 1, 1],
+        [0.8, 1, 1],
+        [1, 1, 1],
+        [1, 1, 1],
+        [1, 1, 1]
+    ]) * 100
+
+    width = 0.04
+
+    plt.bar(density - width, result[:, 0], width, label=f"$n={n[0]}$")
+    plt.bar(density, result[:, 1], width, label=f"$n={n[1]}$")
+    plt.bar(density + width, result[:, 2], width, label=f"$n={n[2]}$")
+
+    plt.xlabel("density")
+    plt.ylabel("准确度(%)")
+    plt.title("算法运行准确性比较")
+    plt.legend()
+    plt.show()
+```
+
+![test2](.img/test2.png)
 
