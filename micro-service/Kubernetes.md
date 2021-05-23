@@ -8,12 +8,11 @@ Kubernetes 命令行工具，`kubectl`，使得你可以对 Kubernetes 集群运
 
 ### 使用包管理器安装
 
-`apt-key.gpg`在`files`目录下，[官方地址](https://packages.cloud.google.com/apt/doc/apt-key.gpg)（需要翻墙）。
-
 ```sh
 # 使用apt安装
 sudo apt-get update && sudo apt-get install -y apt-transport-https gnupg2 curl
-cat apt-key.gpg | sudo apt-key add -
+# tuna镜像中没有doc目录，所以从aliyun下载pat-key.gpg
+curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add - 
 echo "deb https://mirrors.tuna.tsinghua.edu.cn/kubernetes/apt kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubectl
@@ -104,6 +103,12 @@ Github下载：https://github.com/kubernetes/minikube/releases。
 
 tuna镜像下载：https://mirrors.tuna.tsinghua.edu.cn/github-release/kubernetes/minikube/LatestRelease/。
 
+阿里云下载：https://developer.aliyun.com/article/221687
+
+预装环境：
+
+`minikube`需要容器或者虚拟机管理器，所以需要提前安装`docker`、`virtualbox`、`vmware`、`Podman`、`kvm`中的任意一个。
+
 下载并安装最新的发行版：
 
 ```sh
@@ -115,7 +120,8 @@ sudo apt-get install ./minikube_latest_amd64.deb
 启动集群：
 
 ```sh
-minikube start
+# 指定采用docker驱动
+minikube start --driver=docker --image-mirror-country=cn
 ```
 
 停止集群：
