@@ -1,5 +1,14 @@
 # LLM Fine-Tuning
 
+## 前置条件
+
+- Ubuntu 20.04/22.04
+- Linux Kernel >= 5.5.0，如果使用的是20.04，可能需要安装`linux-generic-hwe-20.04`以使用更新的内核
+- Python >= 3.10，如果默认的版本较低，可以通过`pyenv`来管理多版本Python，以安装高版本
+- CUDA 11.8，cudnn 8.9.7
+
+> 硬件支持（Hardware Enablement, HWE）的内核会始终使用更新的版本，比`linux-generic`的内核版本高，但稳定性可能略低。
+
 ## 方法分类
 
 ### Parameter Efficient Model Fine-Tuning (PEFT)
