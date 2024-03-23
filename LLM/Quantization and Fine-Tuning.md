@@ -13,7 +13,7 @@
 
 ### Parameter Efficient Model Fine-Tuning (PEFT)
 
-保持整个预训练模型参数冻结，并仅向模型中添加微小的可学习参数/层。通过这种方式，只需要训练一小部分参数。目前的方法有`LoRA`、`QLoRA`、`LLaMA Adapter`和`Prefix-tuning`。
+保持整个预训练模型参数冻结，并仅向模型中添加微小的可学习参数/层。通过这种方式，只需要训练一小部分参数。目前的方法有`LoRA`、`QLoRA`、`LLaMA Adapter`和`Prefix-tuning`等。
 
 现有的PEFT库：https://github.com/huggingface/peft
 
@@ -67,11 +67,12 @@ mv ./llama-recipes/recipes/finetuning/finetuning.py ./
 rm -r llama-recipes
 # trl脚本获取
 git clone https://github.com/huggingface/trl.git
-mv trl/examples/scripts/sft.py ./
+mv ./trl/examples/scripts/sft.py ./
 rm -r trl
 # qlora脚本获取
 git clone https://github.com/artidoro/qlora.git
-# TODO
+mv ./qlora/qlora.py ./
+rm -r qlora
 # 数据集目录创建
 mkdir datasets
 ```
@@ -216,7 +217,15 @@ eval_csv.to_csv(eval_name, index=False, encoding = 'utf-8-sig', )
 
 openassistant-guanaco：https://huggingface.co/datasets/timdettmers/openassistant-guanaco/tree/main
 
-3. llama_recipes模块修改
+mmlu：https://github.com/artidoro/qlora/tree/main/data/mmlu
+
+3. 评估模块下载
+
+accuracy：https://huggingface.co/spaces/evaluate-metric/accuracy/tree/main
+
+放在工程根目录下
+
+4. llama_recipes模块/qlora脚本 修改
 
 ```python
 # llama_recipes/configs/datasets.py
@@ -252,7 +261,29 @@ class custom_dataset:
     test_split: str = "validation"
 ```
 
-4. 开始LoRA微调
+```python
+# qlora.py
+# 588行
+elif dataset_name == 'oasst1':
+    return load_dataset("./datasets/openassistant-guanaco")
+# 725-733行
+if args.mmlu_dataset == 'mmlu-zs':
+    mmlu_dataset = load_dataset("json", data_files={
+        'eval': 'datasets/mmlu/zero_shot_mmlu_val.json',
+        'test': 'datasets/mmlu/zero_shot_mmlu_test.json',
+    })
+    mmlu_dataset = mmlu_dataset.remove_columns('subject')
+# MMLU Five-shot (Eval/Test only)
+elif args.mmlu_dataset == 'mmlu' or args.mmlu_dataset == 'mmlu-fs':
+    mmlu_dataset = load_dataset("json", data_files={
+        'eval': 'datasets/mmlu/five_shot_mmlu_val.json',
+        'test': 'datasets/mmlu/five_shot_mmlu_test.json',
+    })
+# 745行
+accuracy = evaluate.load("./accuracy")
+```
+
+5. 开始LoRA微调
 
 ```shell
 # 这里是使用了两张GPU进行微调，数据集的设置在最后一行
@@ -288,9 +319,263 @@ torchrun --nnodes 1 --nproc_per_node 2 sft.py \
     --load_in_4bit
 ```
 
-5. 尝试QLoRA微调
+6. 尝试QLoRA微调
 
+如果报错，可能需要调整依赖包：https://github.com/artidoro/qlora/blob/main/requirements.txt 。
 
+或者尝试修改`qlora.py`文件。
 
+```shell
+python qlora.py \
+    --model_name_or_path ../Llama-2-13b-hf/ \
+    --use_auth \
+    --output_dir ../Llama-2-13b-my-lora/ \
+    --logging_steps 10 \
+    --save_strategy steps \
+    --data_seed 42 \
+    --save_steps 500 \
+    --save_total_limit 40 \
+    --evaluation_strategy steps \
+    --eval_dataset_size 1024 \
+    --max_eval_samples 1000 \
+    --per_device_eval_batch_size 1 \
+    --max_new_tokens 32 \
+    --dataloader_num_workers 1 \
+    --group_by_length \
+    --logging_strategy steps \
+    --remove_unused_columns False \
+    --do_train \
+    --do_eval \
+    --do_mmlu_eval \
+    --lora_r 64 \
+    --lora_alpha 16 \
+    --lora_modules all \
+    --double_quant \
+    --quant_type nf4 \
+    --bf16 \
+    --bits 8 \
+    --warmup_ratio 0.03 \
+    --lr_scheduler_type constant \
+    --gradient_checkpointing \
+    --dataset oasst1 \
+    --source_max_len 16 \
+    --target_max_len 512 \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 16 \
+    --max_steps 1875 \
+    --eval_steps 187 \
+    --learning_rate 0.0002 \
+    --adam_beta2 0.999 \
+    --max_grad_norm 0.3 \
+    --lora_dropout 0.1 \
+    --weight_decay 0.0 \
+    --seed 0
+```
 
+（经测试，双3090微调，显存总占用大约21GB）
+
+## Chinese-LLaMA-Alpaca-2 微调
+
+1. 环境配置
+
+```shell
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install packaging ninja
+MAX_JOBS=16 pip install flash-attn --no-build-isolation
+pip install peft transformers accelerate sentencepiece bitsandbytes datasets deepspeed
+```
+
+2. 微调脚本获取
+
+```shell
+git clone https://github.com/ymcui/Chinese-LLaMA-Alpaca-2.git
+mv ./Chinese-LLaMA-Alpaca-2/scripts/training/build_dataset.py ./
+mv ./Chinese-LLaMA-Alpaca-2/scripts/training/run_clm_sft_with_peft.py ./
+mv ./Chinese-LLaMA-Alpaca-2/scripts/training/ds_zero2_no_offload.json ./
+rm -r Chinese-LLaMA-Alpaca-2
+```
+
+```python
+# run_clm_sft_with_peft.py 第405行
+model = LlamaForCausalLM.from_pretrained(
+    model_args.model_name_or_path,
+    config=config,
+    cache_dir=model_args.cache_dir,
+    revision=model_args.model_revision,
+    use_auth_token=True if model_args.use_auth_token else None,
+    torch_dtype=torch_dtype,
+    low_cpu_mem_usage=True,
+    device_map=device_map,
+    # 删除
+    quantization_config=quantization_config,
+    # 修改
+    attn_implementation="flash_attention_2" if training_args.use_flash_attention_2 else None
+)
+```
+
+3. 数据集相关
+
+`chinese-llama-2`系列模型使用了纯文本格式的数据集文件，均为`txt`格式。
+
+`chinese-alpaca-2`系列模型则使用了Stanford Alpaca格式的数据集文件，均为`json`格式。
+
+```json
+[
+    {
+        "instruction": "描述模型应该执行的任务",
+        "input": "任务的可选上下文或输入",
+        "output": "期望生成的回答"
+    },
+    ...
+]
+```
+
+数据集可以放在`datasets/mydata`目录下，`datasets/mydata/train`下放多个json文件，`datasets/mydata/val`下放一个验证用的json文件。
+
+4. 开始微调
+
+```shell
+# run_sft.sh
+# 运行脚本前请仔细阅读wiki(https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/sft_scripts_zh)
+# Read the wiki(https://github.com/ymcui/Chinese-LLaMA-Alpaca-2/wiki/sft_scripts_zh) carefully before running the script
+lr=1e-4
+lora_rank=64
+lora_alpha=128
+lora_trainable="q_proj,v_proj,k_proj,o_proj,gate_proj,down_proj,up_proj"
+modules_to_save="embed_tokens,lm_head"
+lora_dropout=0.05
+
+pretrained_model=../chinese-alpaca-2-13b/
+chinese_tokenizer_path=../chinese-alpaca-2-13b/
+dataset_dir=./datasets/mydata/train/
+per_device_train_batch_size=1
+per_device_eval_batch_size=1
+gradient_accumulation_steps=8
+max_seq_length=512
+output_dir=./chinese-alpaca-2-13b-my-lora/
+validation_file=./datasets/mydata/val/alpaca_data_val.json
+
+deepspeed_config_file=./ds_zero2_no_offload.json
+
+torchrun --nnodes 1 --nproc_per_node 2 run_clm_sft_with_peft.py \
+    --use_flash_attention_2 \
+    --deepspeed ${deepspeed_config_file} \
+    --model_name_or_path ${pretrained_model} \
+    --tokenizer_name_or_path ${chinese_tokenizer_path} \
+    --dataset_dir ${dataset_dir} \
+    --per_device_train_batch_size ${per_device_train_batch_size} \
+    --per_device_eval_batch_size ${per_device_eval_batch_size} \
+    --do_train \
+    --do_eval \
+    --seed 0 \
+    --fp16 \
+    --num_train_epochs 1 \
+    --lr_scheduler_type cosine \
+    --learning_rate ${lr} \
+    --warmup_ratio 0.03 \
+    --weight_decay 0 \
+    --logging_strategy steps \
+    --logging_steps 10 \
+    --save_strategy steps \
+    --save_total_limit 3 \
+    --evaluation_strategy steps \
+    --eval_steps 100 \
+    --save_steps 200 \
+    --gradient_accumulation_steps ${gradient_accumulation_steps} \
+    --preprocessing_num_workers 8 \
+    --max_seq_length ${max_seq_length} \
+    --output_dir ${output_dir} \
+    --overwrite_output_dir \
+    --ddp_timeout 30000 \
+    --logging_first_step True \
+    --lora_rank ${lora_rank} \
+    --lora_alpha ${lora_alpha} \
+    --trainable ${lora_trainable} \
+    --lora_dropout ${lora_dropout} \
+    --torch_dtype float16 \
+    --validation_file ${validation_file} \
+    --load_in_kbits 8 \
+    --save_safetensors False \
+    --gradient_checkpointing \
+    --ddp_find_unused_parameters False
+    # --modules_to_save ${modules_to_save}
+```
+
+（经测试，双3090微调，显存总占用大约37GB）
+
+## Chinese-LLaMA-Alpaca-2 量化
+
+1. llama.cpp编译
+
+生成`./main`（推理）和`./quantize`（量化）可执行文件。
+
+```shell
+git clone --recursive https://github.com/ggerganov/llama.cpp
+cd llama
+pip install torch torchvision torchaudio xformers --index-url https://download.pytorch.org/whl/cu118
+pip install "einops~=0.7.0" "numpy~=1.24.4" "sentencepiece~=0.1.98" "transformers>=4.35.2,<5.0.0" "gguf>=0.1.0" "protobuf>=4.21.0,<5.0.0"
+make LLAMA_CUBLAS=1
+```
+
+2. gguf格式转换
+
+```shell
+# 模型文件夹放在models目录下
+python convert.py ./models/chinese-alpaca-2-13b/
+# 默认生成FP32格式，可以添加“--outtype f16”选项修改为FP16
+```
+
+3. Q4_K量化
+
+这里是进行了4-bit量化，推理速度较快。需要更强的推理性能可以考虑`Q6_K`或`Q8_0`。
+
+```shell
+./quantize ./models/chinese-alpaca-2-13b/ggml-model-f32.gguf ./models/chinese-alpaca-2-13b/ggml-model-Q4_K_M.gguf Q4_K_M
+```
+
+4. 运行模型
+
+chat.sh：
+
+```shell
+#!/bin/bash
+
+# temporary script to chat with Chinese Alpaca-2 model
+# usage: ./chat.sh alpaca2-ggml-model-path your-first-instruction
+
+SYSTEM_PROMPT='You are a helpful assistant. 你是一个乐于助人的助手。'
+# SYSTEM_PROMPT='You are a helpful assistant. 你是一个乐于助人的助手。请你提供专业、有逻辑、内容真实、有价值的详细回复。' # Try this one, if you prefer longer response.
+MODEL_PATH=$1
+FIRST_INSTRUCTION=$2
+
+./main -m "$MODEL_PATH" \
+-ngl 40 -f ./prompts/alpaca.txt -n 2048 \
+--color -i -c 4096 -t 24 --temp 0.5 --top-k 40 --top-p 0.9 --repeat-penalty 1.1 \
+--in-prefix-bos --in-prefix ' [INST] ' --in-suffix ' [/INST]' -p \
+"[INST] <<SYS>>
+$SYSTEM_PROMPT
+<</SYS>>
+
+$FIRST_INSTRUCTION [/INST]"
+```
+
+相关参数说明：
+
+```
+-c 控制上下文的长度，值越大越能参考更长的对话历史（默认：512）
+-f 指定prompt模板，alpaca模型请加载prompts/alpaca.txt
+-n 控制回复生成的最大长度（默认：128）
+-b 控制batch size（默认：512）
+-t 控制线程数量（默认：8），可适当增加
+--repeat_penalty 控制生成回复中对重复文本的惩罚力度
+--temp 温度系数，值越低回复的随机性越小，反之越大
+--top_p, top_k 控制解码采样的相关参数
+```
+
+开始聊天：
+
+```shell
+chmod a+x chat.sh
+./chat.sh ./models/chinese-alpaca-2-13b/ggml-model-Q4_K_M.gguf "请列举5条发生火灾时的应对建议"
+```
 
