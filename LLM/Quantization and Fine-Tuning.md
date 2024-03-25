@@ -389,6 +389,9 @@ pip install peft transformers accelerate sentencepiece bitsandbytes datasets dee
 
 ```shell
 git clone https://github.com/ymcui/Chinese-LLaMA-Alpaca-2.git
+mv ./Chinese-LLaMA-Alpaca-2/scripts/merge_llama2_with_chinese_lora_low_mem.py ./
+mv ./Chinese-LLaMA-Alpaca-2/scripts/inference/inference_hf.py ./
+mv ./Chinese-LLaMA-Alpaca-2/scripts/attn_and_long_ctx_patches.py ./
 mv ./Chinese-LLaMA-Alpaca-2/scripts/training/build_dataset.py ./
 mv ./Chinese-LLaMA-Alpaca-2/scripts/training/run_clm_sft_with_peft.py ./
 mv ./Chinese-LLaMA-Alpaca-2/scripts/training/ds_zero2_no_offload.json ./
@@ -396,7 +399,12 @@ rm -r Chinese-LLaMA-Alpaca-2
 ```
 
 ```python
-# run_clm_sft_with_peft.py 第405行
+# run_clm_sft_with_peft.py
+# 第68行（以safetensors格式保存会导致无法合并）
+kwargs["model"].save_pretrained(peft_model_path, safe_serialization=False)
+# 第77行
+kwargs["model"].save_pretrained(peft_model_path, safe_serialization=False)
+# 第405行
 model = LlamaForCausalLM.from_pretrained(
     model_args.model_name_or_path,
     config=config,
@@ -501,7 +509,21 @@ torchrun --nnodes 1 --nproc_per_node 2 run_clm_sft_with_peft.py \
     # --modules_to_save ${modules_to_save}
 ```
 
+微调完成的模型存储在`./chinese-alpaca-2-13b-my-lora/sft_lora_model`目录下。
+
 （经测试，双3090微调，显存总占用大约37GB）
+
+5. 模型合并
+
+```shell
+python merge_llama2_with_chinese_lora_low_mem.py --base_model ../chinese-alpaca-2-13b/ --lora_model ./chinese-alpaca-2-13b-my-lora/sft_lora_model --output_type huggingface --output_dir ./chinese-alpaca-2-13b-my/ --verbose
+```
+
+6. 模型运行
+
+```shell
+python inference_hf.py --base_model ./chinese-alpaca-2-13b-my/ --with_prompt --interactive --gpus 0,1
+```
 
 ## Chinese-LLaMA-Alpaca-2 量化
 
