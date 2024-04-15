@@ -601,3 +601,155 @@ chmod a+x chat.sh
 ./chat.sh ./models/chinese-alpaca-2-13b/ggml-model-Q4_K_M.gguf "请列举5条发生火灾时的应对建议"
 ```
 
+## ChatGLM3 微调
+
+1. 环境配置
+
+```shell
+sudo apt-get install mpi-default-dev
+# 确保CUDA已安装
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt
+```
+
+```
+# requirements.txt
+
+# base
+protobuf>=4.25.3
+transformers>=4.39.3
+tokenizers>=0.15.0
+cpm_kernels>=1.0.11
+torch>=2.1.0
+gradio>=4.26.0
+sentencepiece>=0.2.0
+sentence_transformers>=2.4.0
+accelerate>=0.29.2
+streamlit>=1.33.0
+fastapi>=0.110.0
+loguru~=0.7.2
+mdtex2html>=1.3.0
+latex2mathml>=3.77.0
+jupyter_client>=8.6.1
+
+# ft
+jieba>=0.42.1
+ruamel_yaml>=0.18.6
+rouge_chinese>=1.0.3
+jupyter>=1.0.0
+datasets>=2.18.0
+peft>=0.10.0
+deepspeed==0.13.1
+mpi4py>=3.1.5
+nltk
+```
+
+2. 代码获取
+
+```shell
+git clone https://github.com/THUDM/ChatGLM3.git
+mv ./ChatGLM3/finetune_demo/configs/ ./
+mv ./ChatGLM3/finetune_demo/inference_hf.py ./
+mv ./ChatGLM3/finetune_demo/finetune_hf.py ./
+rm -r ChatGLM3
+mkdir data
+mkdir output
+```
+
+3. 数据集下载和转换
+
+下载地址：https://cloud.tsinghua.edu.cn/f/b3f119a008264b1cabd1/?dl=1
+
+解压于：`./data/AdvertiseGen`
+
+**转换**：
+
+```shell
+cd data/AdvertiseGen
+mv dev.json dev.jsonl
+mv train.json train.jsonl
+python trans.py
+cd ../..
+```
+
+```python
+# data/AdvertiseGen/trans.py
+import json
+import copy
+
+data_temp = {
+    "conversations": [
+        {
+            "role": "user",
+            "content": ""
+        },
+        {
+            "role": "assistant",
+            "content": ""
+        }
+    ]
+}
+
+dev_data = []
+with open("./dev.jsonl", "r", encoding="UTF-8") as f:
+    for d in f.readlines():
+        j = json.loads(d)
+        qus = j.get("content")
+        res = j.get("summary")
+        if qus and res:
+            data_temp["conversations"][0]["content"] = qus
+            data_temp["conversations"][1]["content"] = res
+            dev_data.append(copy.deepcopy(data_temp))
+with open("./dev.json", "w", encoding="UTF-8") as f:
+    json.dump(dev_data, f, indent=2, ensure_ascii=False)
+
+train_data = []
+with open("./train.jsonl", "r", encoding="UTF-8") as f:
+    for d in f.readlines():
+        j = json.loads(d)
+        qus = j.get("content")
+        res = j.get("summary")
+        if qus and res:
+            data_temp["conversations"][0]["content"] = qus
+            data_temp["conversations"][1]["content"] = res
+            train_data.append(copy.deepcopy(data_temp))
+with open("./train.json", "w", encoding="UTF-8") as f:
+    json.dump(train_data, f, indent=2, ensure_ascii=False)
+```
+
+4. LoRA微调
+
+```shell
+OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc_per_node=2 finetune_hf.py \
+    data/AdvertiseGen/ \
+    ../chatglm3-6b \
+    configs/lora.yaml
+```
+
+微调后的模型文件保存在`./output`目录下。
+
+`P-Turning v2`微调则需使用`configs/ptuning_v2.yaml`配置文件。
+
+**从保存点继续微调**：
+
+```shell
+# 从最后一个checkpoint继续微调
+OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc_per_node=2 finetune_hf.py \
+    data/AdvertiseGen/ \
+    ../chatglm3-6b \
+    configs/lora.yaml \
+    yes
+# 从指定checkpoint继续微调
+OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc_per_node=2 finetune_hf.py \
+    data/AdvertiseGen/ \
+    ../chatglm3-6b \
+    configs/lora.yaml \
+    500
+```
+
+5. 模型测试
+
+```shell
+python inference_hf.py ./output/checkpoint-3000/ --prompt "类型#裤*版型#宽松*风格#青春*风格#性感*图案#创意*裤腰型#高腰*裤口#毛边"
+```
+
