@@ -753,3 +753,77 @@ OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc_per_node=2 finetune_h
 python inference_hf.py ./output/checkpoint-3000/ --prompt "类型#裤*版型#宽松*风格#青春*风格#性感*图案#创意*裤腰型#高腰*裤口#毛边"
 ```
 
+## ChatGLM3 量化
+
+1. 环境配置
+
+```shell
+git clone --recursive https://github.com/li-plus/chatglm.cpp.git && cd chatglm.cpp
+# 确保CUDA已安装
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install tabulate tqdm transformers accelerate sentencepiece
+```
+
+2. `q8_0`量化
+
+```shell
+python3 chatglm_cpp/convert.py -i ../chatglm3-6b/ -t q8_0 -o chatglm-ggml-q8_0.bin
+```
+
+3. chatglm.cpp编译
+
+```shell
+cmake -B build -DGGML_CUBLAS=ON -DCUDA_ARCHITECTURES="86"	# 8.6对应3090
+# 具体数值参考 https://developer.nvidia.com/cuda-gpus
+cmake --build build -j --config Release
+```
+
+生成的可执行文件在`./build/bin/`目录下。
+
+4. 运行模型
+
+```shell
+# 将"-p 你好"替换为"-i"即可进入交互模式
+./build/bin/main -m chatglm-ggml-q8_0.bin --top_p 0.8 --temp 0.8 --sp examples/system/default.txt -p 你好
+```
+
+5. Python Binding
+
+安装`chatglm-cpp`包：
+
+```shell
+CMAKE_ARGS="-DGGML_CUBLAS=ON" pip install .
+rm -r chatglm_cpp	# 这个目录和导入包名冲突了
+```
+
+Python运行：
+
+```shell
+python examples/cli_demo.py -m chatglm-ggml-q8_0.bin -i
+```
+
+调用示例：
+
+```python
+import chatglm_cpp
+
+pipeline = chatglm_cpp.Pipeline(
+    "./chatglm-ggml-q8_0.bin"
+)
+
+with open("./examples/system/default.txt", "r", encoding="UTF-8") as f:
+    system_prompt = f.read()
+
+msg = pipeline.chat([
+        chatglm_cpp.ChatMessage(role="system", content=system_prompt),
+        chatglm_cpp.ChatMessage(role="user", content="你好")
+    ],
+    temperature=0.95,
+    max_context_length=512,
+    max_length=2048,
+    top_p=0.7
+)
+
+print(msg.content)
+```
+
