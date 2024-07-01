@@ -753,6 +753,104 @@ OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc_per_node=2 finetune_h
 python inference_hf.py ./output/checkpoint-3000/ --prompt "类型#裤*版型#宽松*风格#青春*风格#性感*图案#创意*裤腰型#高腰*裤口#毛边"
 ```
 
+## GLM4-9B-Chat 微调
+
+1. 环境配置
+
+```shell
+git clone https://github.com/THUDM/GLM-4.git
+cd GLM-4
+pip config set global.extra-index-url https://download.pytorch.org/whl/cu118
+pip install -r basic_demo/requirements.txt
+pip install -r finetune_demo/requirements.txt
+cd finetune_demo
+```
+
+2. 数据集下载和转换
+
+下载地址：https://cloud.tsinghua.edu.cn/f/b3f119a008264b1cabd1/?dl=1
+
+下载地址2：https://huggingface.co/datasets/shibing624/AdvertiseGen/tree/main
+
+解压于：`./data/AdvertiseGen`
+
+**转换**：
+
+```python
+# data/AdvertiseGen/trans.py
+import json
+import copy
+
+data_temp = {
+    "messages": [
+        {
+            "role": "user",
+            "content": ""
+        },
+        {
+            "role": "assistant",
+            "content": ""
+        }
+    ]
+}
+
+dev_data = []
+with open("./dev.json", "r", encoding="UTF-8") as f:
+    for d in f.readlines():
+        j = json.loads(d)
+        qus = j.get("content")
+        res = j.get("summary")
+        if qus and res:
+            data_temp["messages"][0]["content"] = qus
+            data_temp["messages"][1]["content"] = res
+            dev_data.append(copy.deepcopy(data_temp))
+with open("./dev.jsonl", "w", encoding="UTF-8") as f:
+    for l in dev_data:
+        f.write(json.dumps(l, ensure_ascii=False) + '\n')
+
+train_data = []
+with open("./train.json", "r", encoding="UTF-8") as f:
+    for d in f.readlines():
+        j = json.loads(d)
+        qus = j.get("content")
+        res = j.get("summary")
+        if qus and res:
+            data_temp["messages"][0]["content"] = qus
+            data_temp["messages"][1]["content"] = res
+            train_data.append(copy.deepcopy(data_temp))
+with open("./train.jsonl", "w", encoding="UTF-8") as f:
+    for l in train_data:
+        f.write(json.dumps(l, ensure_ascii=False) + '\n')
+```
+
+3. Lora微调
+
+```shell
+OMP_NUM_THREADS=1 torchrun --standalone --nnodes=1 --nproc_per_node=4 finetune.py data/AdvertiseGen/ ../../glm-4-9b-chat configs/lora.yaml
+```
+
+训练后的权重文件保存于`output/checkpoint-3000/`目录下。
+
+4. 模型测试
+
+```python
+python inference.py output/checkpoint-3000/
+```
+
+```python
+# inference.py 修改44行的messages
+messages = [
+    {
+        "role": "system",
+        "content": ""
+    },
+    {
+        "role": "user",
+        "content": "类型#裙*版型#显瘦*图案#线条*裙下摆#开叉*裙长#半身裙*裙款式#不规则"
+    }
+]
+```
+
 ## ChatGLM3 量化
 
 1. 环境配置
